@@ -1,5 +1,4 @@
 <?php
-
 if (count($argv) > 2) {
     echo 'O script builder.php só aceita 1 parametro: nome. Ele deve ser escrito com todas as palavras' .
         ' emendadas com as iniciais maiúsculas, sem acentos ou caracterers especiais. Ex: "php builder.php Login" ou "php builder.php CadastroPrincipal".';
@@ -13,7 +12,7 @@ if (!folder_exist('models') || !folder_exist('controllers') || !folder_exist('vi
 
 if (!strtolower($argv[1])) {
     echo 'Você precisa digitar o parametro nome para executar o script. (O nome deve ser escrito com todas as palavras' .
-         ' emendadas com as iniciais maiúsculas, sem acentos ou caracterers especiais. Ex: "php builder.php Login" ou "php builder.php CadastroPrincipal".)';
+        ' emendadas com as iniciais maiúsculas, sem acentos ou caracterers especiais. Ex: "php builder.php Login" ou "php builder.php CadastroPrincipal".)';
     exit;
 }
 
@@ -29,43 +28,37 @@ $titleName = preg_replace('/(?<!\ )[A-Z]/', ' $0', $name);
 
 $model = '
 <?php
-
-require_once("util/param.php");
-
 class ' . $name . '_Model extends Model
 {
     public function __construct()
     {
         parent::__construct();
     }
-
     public function example()
     {
+        
     }
 }';
 file_put_contents('models/' . $fileName . '_model.php', $model);
 
 $controller = '
 <?php
-
 class ' . $name . ' extends Controller {
-
     function __construct() {
         parent::__construct();
 		$this->view->js = array();
 		$this->view->css = array();
     }
-
     function index()
     {
         $this->view->title = "' . $titleName . '";
         /*Os array push devem ser feitos antes de instanciar o header e footer.*/
-        array_push($this->view->js, "views/' . $fileName . '/app.vue.js");
-        array_push($this->view->css, "views/' . $fileName . '/app.vue.css");
+        array_push($this->view->js, "views/' . $fileName . '/'.$fileName.'.js");
+        array_push($this->view->js, "views/' . $fileName . '/'.$fileName.'.php");
+        array_push($this->view->css, "views/' . $fileName . '/'.$fileName.'.css");
         $this->view->render("header");
         $this->view->render("footer");
     }
-
     function example()
     {
         $this->model->example();
@@ -74,49 +67,42 @@ class ' . $name . ' extends Controller {
 file_put_contents('controllers/' . $fileName . '.php', $controller);
 
 $jsView = '
-const AppTemplate = `
-<div class="col-lg-12 control-section card-control-section basic_card_layout">
-  <div class="e-card-resize-container" style="margin-bottom: 90px">
-    <div class="row">
-      <div class="row card-layout">
-        <div class="col-xs-12 col-sm-12 col-lg-12 col-md-12">
-          <div tabindex="0" class="e-card" id="basic_card">
-            <div class="e-card-content">
-              
-            </div>
-          </div>
-        </div>
+<!-- Jumbotron -->
+<div id="intro" class="py-5 text-center bg-light">
+        <h1 class="mb-0 h4"><?=$this->title?></h1>
       </div>
-    </div>
-  </div>
-</div>
-`;
+      <!-- Jumbotron -->
+    </header>
+    <!--Main Navigation-->
 
-Vue.component("AppVue", {
-  template: AppTemplate,
-  data() {
-    return {}
-  },
-  methods: {}
-});
+    <!--Main layout-->
+    <main class="mt-4 mb-5">
+      <div class="container">
+        <div class="row">
+
+		</div>
+      </div>
+    </main>
+    <!--Main layout-->
+
+
 ';
 
 if (!is_dir('views/' . $fileName)) {
     mkdir('views/' . $fileName);
 }
 
-file_put_contents('views/' . $fileName . '/app.vue.js', $jsView);
-file_put_contents('views/' . $fileName . '/app.vue.css', '');
+file_put_contents('views/' . $fileName . '/'.$fileName.'.php', $jsView);
+file_put_contents('views/' . $fileName . '/'.$fileName.'.js', '');
+file_put_contents('views/' . $fileName . '/'.$fileName.'.css', '');
 
 function folder_exist($folder)
 {
     $path = realpath($folder);
-    return ($path !== false AND is_dir($path)) ? $path : false;
+    return ($path !== false and is_dir($path)) ? $path : false;
 }
 
-function tirarAcentos($string){
-    return preg_replace(array("/(á|à|ã|â|ä)/","/(Á|À|Ã|Â|Ä)/","/(é|è|ê|ë)/","/(É|È|Ê|Ë)/","/(í|ì|î|ï)/","/(Í|Ì|Î|Ï)/","/(ó|ò|õ|ô|ö)/","/(Ó|Ò|Õ|Ô|Ö)/","/(ú|ù|û|ü)/","/(Ú|Ù|Û|Ü)/","/(ñ)/","/(Ñ)/"),explode(" ","a A e E i I o O u U n N"),$string);
+function tirarAcentos($string)
+{
+    return preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/"), explode(" ", "a A e E i I o O u U n N"), $string);
 }
-
-
-
