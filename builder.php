@@ -1,4 +1,5 @@
 <?php
+
 if (count($argv) > 2) {
     echo 'O script builder.php só aceita 1 parametro: nome. Ele deve ser escrito com todas as palavras' .
         ' emendadas com as iniciais maiúsculas, sem acentos ou caracterers especiais. Ex: "php builder.php Login" ou "php builder.php CadastroPrincipal".';
@@ -46,17 +47,14 @@ $controller = '
 class ' . $name . ' extends Controller {
     function __construct() {
         parent::__construct();
-		$this->view->js = array();
-		$this->view->css = array();
+		$this->view->js = array("views/' . $fileName . '/index.js");
+		$this->view->css = array("views/' . $fileName . '/index.css");
     }
     function index()
     {
         $this->view->title = "' . $titleName . '";
-        /*Os array push devem ser feitos antes de instanciar o header e footer.*/
-        array_push($this->view->js, "views/' . $fileName . '/'.$fileName.'.js");
-        array_push($this->view->js, "views/' . $fileName . '/'.$fileName.'.php");
-        array_push($this->view->css, "views/' . $fileName . '/'.$fileName.'.css");
         $this->view->render("header");
+        $this->view->render("'.$fileName.'/index");
         $this->view->render("footer");
     }
     function example()
@@ -66,7 +64,7 @@ class ' . $name . ' extends Controller {
 }';
 file_put_contents('controllers/' . $fileName . '.php', $controller);
 
-$jsView = '
+$indexView = '
 <!-- Jumbotron -->
 <div id="intro" class="py-5 text-center bg-light">
         <h1 class="mb-0 h4"><?=$this->title?></h1>
@@ -92,9 +90,9 @@ if (!is_dir('views/' . $fileName)) {
     mkdir('views/' . $fileName);
 }
 
-file_put_contents('views/' . $fileName . '/'.$fileName.'.php', $jsView);
-file_put_contents('views/' . $fileName . '/'.$fileName.'.js', '');
-file_put_contents('views/' . $fileName . '/'.$fileName.'.css', '');
+file_put_contents('views/' . $fileName . '/index.php', $indexView);
+file_put_contents('views/' . $fileName . '/index.js', '');
+file_put_contents('views/' . $fileName . '/index.css', '');
 
 function folder_exist($folder)
 {
